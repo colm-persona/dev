@@ -10,3 +10,8 @@ Attaching:
 1. run `docker ps` to find the vscode devcontainer
 2. run `docker exec -it <container_name> /bin/bash`
 3. or as a one-liner: `$ name=$(docker ps | grep vsc-persona | head -1 | rev | awk '{print $1}' | rev); docker exec -it $name /bin/bash`
+
+---
+### Todo:
+- [ ] install `ripgrep`
+- [ ] update dotfiles so that the lua config has the right python deps
