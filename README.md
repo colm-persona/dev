@@ -13,7 +13,6 @@ Attaching:
 
 ---
 ### Todo:
-- [ ] install `ripgrep`
 - [ ] update dotfiles so that the lua config has the right python deps
 - [ ] install npm for stupid packages that need it
 - [ ] get git setup
