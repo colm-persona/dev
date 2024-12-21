@@ -6,6 +6,12 @@ RUN sudo apt-get update && \
     sudo apt-get install -y \
     ninja-build gettext cmake unzip curl build-essential tmux ripgrep
 
+# tell git to use ssh and not https
+RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    sudo apt-get install -y nodejs npm
+
 # Clone my dotfiles
 RUN git clone https://github.com/colm-persona/dotfiles.git /root/.dotfiles
 
