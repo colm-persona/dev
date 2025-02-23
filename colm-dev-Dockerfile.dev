@@ -6,11 +6,18 @@ RUN sudo apt-get update && \
     sudo apt-get install -y \
     ninja-build gettext cmake unzip curl build-essential tmux ripgrep
 
-# tell git to use ssh and not https
-RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
+# Use bash for the shell
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
-    sudo apt-get install -y nodejs npm
+# Create a script file sourced by both interactive and non-interactive bash shells
+ENV BASH_ENV /root/.bash_env
+RUN touch "${BASH_ENV}"
+RUN echo '. "${BASH_ENV}"' >> ~/.bashrc
+
+# Download and install nvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | PROFILE="${BASH_ENV}" bash
+RUN echo node > .nvmrc
+RUN nvm install
 
 # Clone my dotfiles
 RUN git clone https://github.com/colm-persona/dotfiles.git /root/.dotfiles
@@ -38,3 +45,4 @@ RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerClean'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 RUN nvim --headless -c 'sleep 10' -c 'qall'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+

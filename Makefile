@@ -30,7 +30,7 @@ setup-dockerfile: bootstrap
 		echo "No changes made. '$$SEARCH' not found in $$FILE"; \
 	fi
 
-	@cp -v ./colm-dev-Dockerfile.dev persona/dockerfiles/
+	@cp -f -v ./colm-dev-Dockerfile.dev persona/dockerfiles/
 	@cd persona/dockerfiles && docker build -t colm-dev - < colm-dev-Dockerfile.dev
 
 build: setup-dockerfile
