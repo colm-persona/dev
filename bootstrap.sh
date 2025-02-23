@@ -7,8 +7,6 @@ else
   echo "The persona repo already exists"
 fi
 
-cp -v ./colm-dev-Dockerfile.dev persona/dockerfiles/
-
 EXCLUDE_FILE="persona/.git/info/exclude"
 PATTERN="^colm-dev"
 
