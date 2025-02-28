@@ -21,3 +21,16 @@ Attaching:
 	- [x] allow commits / fetch / merge / etc.
 	- [x] correct ownership
 	- [ ] shortcuts
+
+fix ownership again..
+
+docker buildx build --load \
+    --build-arg BUILDKIT_INLINE_CACHE=1 
+    -f /tmp/devcontainercli-ubuntu/container-features/0.73.0-1740758420327/Dockerfile-with-features 
+    -t vsc-persona-94f734311748cdcf954d86e622f4b200653198ed74952e91c3ec3e1c671120af 
+    --target dev_containers_target_stage 
+    --build-context dev_containers_feature_content_source=/tmp/devcontainercli-ubuntu/container-features/0.73.0-1740758420327 
+    --build-arg _DEV_CONTAINERS_BASE_IMAGE=dev_container_auto_added_stage_label 
+    --build-arg _DEV_CONTAINERS_IMAGE_USER=root 
+    --build-arg _DEV_CONTAINERS_FEATURE_CONTENT_SOURCE=dev_container_feature_content_temp 
+    /mnt/persona-disk/home/ubuntu/persona

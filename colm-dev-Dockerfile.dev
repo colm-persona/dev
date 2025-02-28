@@ -1,44 +1,32 @@
-FROM mcr.microsoft.com/devcontainers/python:1-3.11-bookworm
+FROM persona
 
 RUN echo "Configuring Colm's dev environment..."
+
+USER 1000:1000
 
 RUN sudo apt-get update && \
     sudo apt-get install -y \
     ninja-build gettext cmake unzip curl build-essential tmux ripgrep
 
-# Use bash for the shell
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-# Create a script file sourced by both interactive and non-interactive bash shells
-ENV BASH_ENV /root/.bash_env
-RUN touch "${BASH_ENV}"
-RUN echo '. "${BASH_ENV}"' >> ~/.bashrc
-
-# Download and install nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | PROFILE="${BASH_ENV}" bash
-RUN echo node > .nvmrc
-RUN nvm install
-
-# Clone my dotfiles
-RUN git clone https://github.com/colm-persona/dotfiles.git /root/.dotfiles
-
-# Copy configuration files to good location
-RUN cp -R /root/.dotfiles/.config /root/.dotfiles/.tmux.conf /root/
-
-# Configure tmux
-RUN git clone https://github.com/tmux-plugins/tpm /root/.tmux/plugins/tpm &&\
-    /root/.tmux/plugins/tpm/bin/install_plugins
-
 # build neovim
-RUN git clone https://github.com/neovim/neovim.git /root/neovim && \
-    cd /root/neovim && \
+RUN git clone https://github.com/neovim/neovim.git /home/vscode/neovim && \
+    cd /home/vscode/neovim && \
     git checkout stable && \
     make CMAKE_BUILD_TYPE=RelWithDebInfo && \
-    make install
+    sudo make install
 
 # get our configuration's dependencies
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim\
- ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+ /home/vscode/.local/share/nvim/site/pack/packer/start/packer.nvim
+
+# Copy my dotfiles
+COPY ./dotfiles/.config/nvim /home/vscode/.config/nvim/
+COPY ./dotfiles/.config/tmux /home/vscode/.config/tmux/
+COPY ./dotfiles/.tmux.conf /home/vscode/.tmux.conf
+
+# Configure tmux
+RUN git clone https://github.com/tmux-plugins/tpm /home/vscode/.tmux/plugins/tpm &&\
+    /home/vscode/.tmux/plugins/tpm/bin/install_plugins
 
 # install plugins and quit when done
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerClean'
@@ -46,3 +34,5 @@ RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 RUN nvim --headless -c 'sleep 10' -c 'qall'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
+RUN sudo chown -R 1000:1000 /home/vscode/.config
+RUN sudo chmod -R 755 /home/vscode/.config
