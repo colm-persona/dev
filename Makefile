@@ -16,15 +16,14 @@ build: bootstrap build-base
 	@docker build -t colm-dev -f colm-dev-Dockerfile.dev .
 
 run:
-	@if docker ps --format '{{.Names}}' | grep -q '^colm-dev$$'; then \
-		echo "colm-dev container started"; \
-		docker exec -it colm-dev bash; \
-	else \
+	@if ! docker ps --format '{{.Names}}' | grep -q '^colm-dev$$'; then \
 		echo "starting the colm-dev container"; \
 		docker run -d -it -v ~/.ssh:/home/vscode/.ssh:ro -v ~/persona:/workspace \
 		-w /workspace -u 1000:1000 --name colm-dev colm-dev bash; \
 		echo "colm-dev container started"; \
+		docker exec -d colm-dev dmypy run .; \
 	fi
+	@docker exec -it colm-dev bash; \
 
 clean:
 	@docker kill colm-dev || true

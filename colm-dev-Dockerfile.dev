@@ -6,7 +6,7 @@ USER 1000:1000
 
 RUN sudo apt-get update && \
     sudo apt-get install -y \
-    ninja-build gettext cmake unzip curl build-essential tmux ripgrep
+    ninja-build gettext cmake unzip curl build-essential tmux ripgrep exa
 
 # build neovim
 RUN git clone https://github.com/neovim/neovim.git /home/vscode/neovim && \
@@ -28,22 +28,23 @@ RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 
 # Copy my dotfiles
 COPY ./dotfiles/.config/nvim /home/vscode/.config/nvim/
-COPY ./dotfiles/.config/tmux /home/vscode/.config/tmux/
-COPY ./dotfiles/.tmux.conf /home/vscode/.tmux.conf
-COPY ./dotfiles/install.sh install.sh
-COPY ./dotfiles/.bash_profile /home/vscode/.bash_profile
-RUN ./install.sh
-RUN sudo rm install.sh
-
-# Configure tmux
-RUN git clone https://github.com/tmux-plugins/tpm /home/vscode/.tmux/plugins/tpm &&\
-    /home/vscode/.tmux/plugins/tpm/bin/install_plugins
 
 # install plugins and quit when done
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerClean'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 RUN nvim --headless -c 'sleep 10' -c 'qall'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+
+COPY ./dotfiles/.config/tmux /home/vscode/.config/tmux/
+COPY ./dotfiles/.tmux.conf /home/vscode/.tmux.conf
+# Configure tmux
+RUN git clone https://github.com/tmux-plugins/tpm /home/vscode/.tmux/plugins/tpm &&\
+    /home/vscode/.tmux/plugins/tpm/bin/install_plugins
+
+COPY ./dotfiles/install.sh install.sh
+COPY ./dotfiles/.bash_profile /home/vscode/.bash_profile
+RUN ./install.sh
+RUN sudo rm install.sh
 
 RUN sudo chown -R 1000:1000 /home/vscode/.config
 RUN sudo chmod -R 755 /home/vscode/.config
