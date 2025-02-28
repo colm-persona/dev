@@ -15,6 +15,13 @@ RUN git clone https://github.com/neovim/neovim.git /home/vscode/neovim && \
     make CMAKE_BUILD_TYPE=RelWithDebInfo && \
     sudo make install
 
+# -> NOTE ^ these are the expensive ones. Try not to bust the cache above here
+
+RUN curl -o /home/vscode/.git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
+
+# Append git-completion source command to .bashrc
+RUN echo 'if [ -f ~/.git-completion.bash ]; then\n  . ~/.git-completion.bash\nfi' >> /home/vscode/.bashrc
+
 # get our configuration's dependencies
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim\
  /home/vscode/.local/share/nvim/site/pack/packer/start/packer.nvim
@@ -23,6 +30,10 @@ RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 COPY ./dotfiles/.config/nvim /home/vscode/.config/nvim/
 COPY ./dotfiles/.config/tmux /home/vscode/.config/tmux/
 COPY ./dotfiles/.tmux.conf /home/vscode/.tmux.conf
+COPY ./dotfiles/install.sh install.sh
+COPY ./dotfiles/.bash_profile /home/vscode/.bash_profile
+RUN ./install.sh
+RUN sudo rm install.sh
 
 # Configure tmux
 RUN git clone https://github.com/tmux-plugins/tpm /home/vscode/.tmux/plugins/tpm &&\
@@ -36,3 +47,4 @@ RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
 RUN sudo chown -R 1000:1000 /home/vscode/.config
 RUN sudo chmod -R 755 /home/vscode/.config
+
