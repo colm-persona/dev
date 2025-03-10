@@ -1,4 +1,4 @@
-all: build
+all: run
 
 bootstrap:
 	@if [ ! -d "dotfiles" ]; then \
@@ -20,9 +20,10 @@ run:
 		echo "starting the colm-dev container"; \
 		docker run -d -it -v ~/.ssh:/home/vscode/.ssh:ro \
 		-v ~/persona:/workspaces/persona -v ~/persona:/workspace \
+		--network host \
+		-p 8080:8080 -p 8001:8001 \
 		-w /workspace -u 1000:1000 --name colm-dev colm-dev bash; \
 		echo "colm-dev container started"; \
-		docker exec -d colm-dev dmypy run .; \
 	fi
 	@docker exec -it colm-dev bash; \
 
