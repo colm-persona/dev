@@ -11,7 +11,7 @@ RUN sudo apt-get update && \
 # build neovim
 RUN git clone https://github.com/neovim/neovim.git /home/vscode/neovim && \
     cd /home/vscode/neovim && \
-    git checkout stable && \
+    git checkout v0.10.4 && \
     make CMAKE_BUILD_TYPE=RelWithDebInfo && \
     sudo make install
 
