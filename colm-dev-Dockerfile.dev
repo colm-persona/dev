@@ -15,7 +15,27 @@ RUN git clone https://github.com/neovim/neovim.git /home/vscode/neovim && \
     make CMAKE_BUILD_TYPE=RelWithDebInfo && \
     sudo make install
 
+USER root
+
+# Install dependencies and Go
+ENV GO_VERSION=1.24.2
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates tar \
+    && curl -fsSL https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz -o /tmp/go.tar.gz \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf /tmp/go.tar.gz \
+    && rm /tmp/go.tar.gz \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Add Go to PATH
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+USER vscode
+
 # -> NOTE ^ these are the expensive ones. Try not to bust the cache above here
+
+
 
 RUN curl -o /home/vscode/.git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
 
