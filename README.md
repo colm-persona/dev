@@ -2,14 +2,10 @@
 
 Building:
 ```bash
-make
+make build
 ```
 
 Running:
 ```bash
-make run
+make
 ```
-
----
-### Todo:
-Get a good python lsp (mypy? dmypy?)

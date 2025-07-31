@@ -24,6 +24,7 @@ run:
 		-v /etc/gitconfig:/etc/gitconfig \
 		-v ~/go/bin:/home/vscode/go/bin:ro \
 		--network host \
+		--cap-add SYS_PTRACE \
 		-w /workspace -u 1000:1000 --name colm-dev colm-dev bash; \
 		echo "colm-dev container started"; \
 	fi
