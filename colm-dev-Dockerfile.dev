@@ -8,10 +8,14 @@ RUN sudo apt-get update && \
     sudo apt-get install -y \
     ninja-build gettext cmake unzip curl build-essential tmux ripgrep exa
 
+# --- Install Rust early (stable toolchain, won't change often) ---
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+ENV PATH="/home/vscode/.cargo/bin:${PATH}"
+
 # build neovim
 RUN git clone https://github.com/neovim/neovim.git /home/vscode/neovim && \
     cd /home/vscode/neovim && \
-    git checkout v0.10.4 && \
+    git checkout v0.11.4 && \
     make CMAKE_BUILD_TYPE=RelWithDebInfo && \
     sudo make install
 
@@ -35,15 +39,13 @@ USER vscode
 
 # -> NOTE ^ these are the expensive ones. Try not to bust the cache above here
 
-
-
 RUN curl -o /home/vscode/.git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
 
 # Append git-completion source command to .bashrc
 RUN echo 'if [ -f ~/.git-completion.bash ]; then\n  . ~/.git-completion.bash\nfi' >> /home/vscode/.bashrc
 
 # get our configuration's dependencies
-RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
  /home/vscode/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 # Copy my dotfiles
@@ -68,4 +70,4 @@ RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerClean'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 RUN nvim --headless -c 'sleep 10' -c 'qall'
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
-RUN nvim --headless -c 'MasonUpdate' -c 'MasonInstall --force basedpyright terraform systemd-language-server' -c 'quitall'
+RUN nvim --headless -c 'MasonUpdate' -c 'MasonInstall --force basedpyright terraform systemd-language-server gopls rust-analyzer' -c 'quitall'
