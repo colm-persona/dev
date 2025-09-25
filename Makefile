@@ -13,11 +13,11 @@ build-base:
 	@cd ~/persona && docker build -t persona -f dockerfiles/Dockerfile.dev .
 
 build: bootstrap build-base
-	@docker build -t colm-dev -f colm-dev-Dockerfile.dev .
+	@docker build -t colm-dev-candidate -f colm-dev-Dockerfile.dev .
 
 run:
-	@if ! docker ps --format '{{.Names}}' | grep -q '^colm-dev$$'; then \
-		echo "starting the colm-dev container"; \
+	@if ! docker ps --format '{{.Names}}' | grep -q '^colm-dev-candidate$$'; then \
+		echo "starting the colm-dev-candidate container"; \
 		docker run -d -it -v ~/.ssh:/home/vscode/.ssh:ro \
 		-v ~/persona:/workspaces/persona \
 		-v ~/persona:/workspace \
@@ -25,27 +25,27 @@ run:
 		-v ~/go/bin:/home/vscode/go/bin:ro \
 		--network host \
 		--cap-add SYS_PTRACE \
-		-w /workspace -u 1000:1000 --name colm-dev colm-dev bash; \
-		echo "colm-dev container started"; \
+		-w /workspace -u 1000:1000 --name colm-dev-candidate colm-dev-candidate bash; \
+		echo "colm-dev-candidate container started"; \
 	fi
-	@docker exec -it colm-dev bash; \
+	@docker exec -it colm-dev-candidate bash; \
 
 run-tf:
-	@if ! docker ps --format '{{.Names}}' | grep -q '^colm-dev-tf$$'; then \
-		echo "starting the colm-dev-tf container"; \
+	@if ! docker ps --format '{{.Names}}' | grep -q '^colm-dev-candidate-tf$$'; then \
+		echo "starting the colm-dev-candidate-tf container"; \
 		docker run -d -it -v ~/.ssh:/home/vscode/.ssh:ro \
 		-v ~/terraform-provider-uptrace:/workspaces/terraform-provider-uptrace \
 		-v ~/terraform-provider-uptrace:/workspace \
 		-v /etc/gitconfig:/etc/gitconfig \
 		-v ~/go/bin:/home/vscode/go/bin:rw \
 		--network host \
-		-w /workspace -u 1000:1000 --name colm-dev-tf colm-dev bash; \
-		echo "colm-dev-tf container started"; \
+		-w /workspace -u 1000:1000 --name colm-dev-candidate-tf colm-dev-candidate bash; \
+		echo "colm-dev-candidate-tf container started"; \
 	fi
-	@docker exec -it colm-dev-tf bash; \
+	@docker exec -it colm-dev-candidate-tf bash; \
 
 clean:
-	@docker kill colm-dev || true
-	@docker rm colm-dev || true
-	@docker kill colm-dev-tf || true
-	@docker rm colm-dev-tf || true
+	@docker kill colm-dev-candidate || true
+	@docker rm colm-dev-candidate || true
+	@docker kill colm-dev-candidate-tf || true
+	@docker rm colm-dev-candidate-tf || true
