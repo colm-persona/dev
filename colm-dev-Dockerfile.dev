@@ -49,12 +49,6 @@ RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 # Copy my dotfiles
 COPY ./dotfiles/.config/nvim /home/vscode/.config/nvim/
 
-# install plugins and quit when done
-RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerClean'
-RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
-RUN nvim --headless -c 'sleep 10' -c 'qall'
-RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
-
 COPY ./dotfiles/.config/tmux /home/vscode/.config/tmux/
 COPY ./dotfiles/.tmux.conf /home/vscode/.tmux.conf
 # Configure tmux
@@ -69,3 +63,9 @@ RUN sudo rm install.sh
 RUN sudo chown -R 1000:1000 /home/vscode/.config
 RUN sudo chmod -R 755 /home/vscode/.config
 
+# install plugins and quit when done
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerClean'
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+RUN nvim --headless -c 'sleep 10' -c 'qall'
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+RUN nvim --headless -c 'MasonUpdate' -c 'MasonInstall --force basedpyright terraform systemd-language-server' -c 'quitall'
